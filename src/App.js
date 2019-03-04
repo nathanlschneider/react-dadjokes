@@ -1,28 +1,40 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.scss';
+let headers = new Headers({
+    Accept: 'application/json',
+    'User-Agent': 'react-dadjokes (https://github.com/nathanlschneider/react-dadjokes)'
+});
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+    constructor(props) {
+        super(props);
+        this.state = { joke: null };
+        this.handleOnClick = this.handleOnClick.bind(this);
+    }
+
+    handleOnClick(event) {
+        fetch('https://icanhazdadjoke.com/', { method: 'GET', headers: headers })
+            .then(res => res.text())
+            .then(text => JSON.parse(text))
+            .then(json => this.setState({ joke: json.joke }));
+    }
+
+    componentDidMount() {
+        this.handleOnClick();
+    }
+    render() {
+        return (
+            <main className='App'>
+                <article className='App__article'>
+                    <section className='App__section'>{this.state.joke}</section>
+                    <hr className='App__hr' style={{width: '80%'}}/>
+                    <button className='App__btn' onClick={this.handleOnClick}>
+                        Tell me a joke
+                    </button>
+                </article>
+            </main>
+        );
+    }
 }
 
 export default App;
